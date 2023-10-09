@@ -11,7 +11,7 @@ public class Credor {
     public Credor() {
     }
 
-    public Credor(String nome, String documento, String titulo, double quantidade, Double valor) {
+    public Credor(String nome, String documento, String titulo, double quantidade, double valor) {
         this.nome = nome;
         this.documento = documento;
         this.titulo = titulo;
@@ -51,12 +51,12 @@ public class Credor {
         this.quantidade = quantidade;
     }
 
-    public Double getValor() {
+    public double getValor() {
         return valor;
     }
 
-    public void setValor(Double valor) {
+    public void setValor(double valor) {
         this.valor = valor;
     }
-
 }
+   

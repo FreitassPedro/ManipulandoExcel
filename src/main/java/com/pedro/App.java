@@ -39,6 +39,7 @@ public class App {
             while (rowIterator.hasNext()) {
                 Row row = rowIterator.next();
                 Iterator<Cell> cellIterator = row.cellIterator();
+            
 
                 if (pularLinha) {
                     pularLinha = false;
@@ -65,9 +66,8 @@ public class App {
                                 pularLinha = true;
                                 break;
                             }
-                            if (!nomeEncontrado.equals("")) {
+                            if (!nomeEncontrado.equals("") || nomeEncontrado.equals("Empresa")) {
                                 nomeEncontrado = nomeEncontrado.trim();
-                                System.out.println(nomeEncontrado);
                                 String[] fields = nomeEncontrado.split(" - ");
                                 if (fields[1].endsWith(" ") || fields[1].endsWith(".")) {
                                     fields[1] = fields[1].substring(0, fields[1].length() - 1);
@@ -108,6 +108,8 @@ public class App {
             e.printStackTrace();
             System.out.println("Arquivo Excel não encontrado!");
         }
+
+
         Map<String, Double> valoresPorNome = new HashMap<>();
 
         // Itere sobre a lista de credores e agrupe os valores por nome
@@ -119,14 +121,18 @@ public class App {
             if (valoresPorNome.containsKey(nomeBeneficiario)) {
                 // Se o nome já existe no mapa, some o valor existente com o novo valor
                 double valorExistente = valoresPorNome.get(nomeBeneficiario);
+
                 valoresPorNome.put(nomeBeneficiario, valorExistente + valor);
             } else {
                 // Se o nome não existe no mapa, crie uma nova entrada com o valor
                 valoresPorNome.put(nomeBeneficiario, valor);
             }
         }
+        System.out.println("-> TODOS VALROES LIDOS!");
+        System.out.println();
         double valorDia = 0;
-        // Mapa com os valores agrupados por nome
+
+        // mapa com os valores agrupados por nome
         for (Map.Entry<String, Double> entry : valoresPorNome.entrySet()) {
             String nomeBeneficiario = entry.getKey();
             double valorTotal = entry.getValue();
@@ -143,6 +149,7 @@ public class App {
                 "%,.2f", valorDia));
 
     }
+
 
     // CÓDIGO DO STACK OVERFLOW PARA REMOVER ACENTOS DAS PALAVRAS
     public static String removerAcentos(String str) {

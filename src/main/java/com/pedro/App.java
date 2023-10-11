@@ -39,7 +39,6 @@ public class App {
             while (rowIterator.hasNext()) {
                 Row row = rowIterator.next();
                 Iterator<Cell> cellIterator = row.cellIterator();
-            
 
                 if (pularLinha) {
                     pularLinha = false;
@@ -88,6 +87,7 @@ public class App {
                             System.out.println("Título: " + fields[0]);
                             System.out.println("Parcela: " + parcela);
                             credor.setTitulo(fields[0]);
+                            credor.setParcela(Integer.valueOf(fields[1]));
                             break;
                         case 4:
                             System.out.println("Parcelas Totais: " + cell.getNumericCellValue());
@@ -109,30 +109,43 @@ public class App {
             System.out.println("Arquivo Excel não encontrado!");
         }
 
-
         Map<String, Double> valoresPorNome = new HashMap<>();
-
+        double valorDia = 0;
+        double valorTeste = 0;
+        double valorPassarIf = 0;
         // Itere sobre a lista de credores e agrupe os valores por nome
         for (Credor credor : listaCredor) {
+            System.out.println();
             String nomeBeneficiario = credor.getNome();
             double valor = credor.getValor();
+            String titulo = credor.getTitulo();
+            String valorTotalString = String.format(Locale.forLanguageTag("pt-BR"),
+                    "%,.2f", valor);
+            String resposta = LocalizarPdf.localizarArquivosPdf(nomeBeneficiario, valorTotalString, titulo);
+            System.out.println("RESPOSTA----------" + resposta);
+            if (!resposta.equals("nomeValor")) {
+                valorPassarIf += valor;
+                // Verifique se o nome já está no mapa
+                if (valoresPorNome.containsKey(nomeBeneficiario)) {
+                    // Se o nome já existe no mapa, some o valor existente com o novo valor
+                    double valorExistente = valoresPorNome.get(nomeBeneficiario);
 
-            // Verifique se o nome já está no mapa
-            if (valoresPorNome.containsKey(nomeBeneficiario)) {
-                // Se o nome já existe no mapa, some o valor existente com o novo valor
-                double valorExistente = valoresPorNome.get(nomeBeneficiario);
-
-                valoresPorNome.put(nomeBeneficiario, valorExistente + valor);
-            } else {
-                // Se o nome não existe no mapa, crie uma nova entrada com o valor
-                valoresPorNome.put(nomeBeneficiario, valor);
+                    valoresPorNome.put(nomeBeneficiario, valorExistente + valor);
+                } else {
+                    // Se o nome não existe no mapa, crie uma nova entrada com o valor
+                    valoresPorNome.put(nomeBeneficiario, valor);
+                }
+            }
+            else{
+                valorTeste += valor;
+                valoresPorNome.put(nomeBeneficiario + " " + credor.getTitulo(), valor);
             }
         }
         System.out.println("-> TODOS VALROES LIDOS!");
         System.out.println();
-        double valorDia = 0;
 
-        // mapa com os valores agrupados por nome
+
+        // Imprime mapa com os valores agrupados por nome
         for (Map.Entry<String, Double> entry : valoresPorNome.entrySet()) {
             String nomeBeneficiario = entry.getKey();
             double valorTotal = entry.getValue();
@@ -141,15 +154,16 @@ public class App {
             System.out.println();
             System.out.println("Nome:" + nomeBeneficiario + ", Valor Total: "
                     + valorTotalString);
-            LocalizarPdf.localizarArquivosPdf(nomeBeneficiario, valorTotalString);
+            LocalizarPdf.localizarArquivosPdf(nomeBeneficiario, valorTotalString, "null");
             valorDia += valorTotal;
         }
         System.out.println();
         System.out.println("Valor do dia: " + String.format(Locale.forLanguageTag("pt-BR"),
                 "%,.2f", valorDia));
-
+                System.out.println("valor teste: " + valorTeste);
+                System.out.println("valor passar if " + valorPassarIf);
+                System.out.println("valor total: " +  (valorPassarIf + valorTeste));
     }
-
 
     // CÓDIGO DO STACK OVERFLOW PARA REMOVER ACENTOS DAS PALAVRAS
     public static String removerAcentos(String str) {

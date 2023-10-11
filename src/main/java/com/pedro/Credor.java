@@ -5,16 +5,18 @@ public class Credor {
     private String nome;
     private String documento;
     private String titulo;
+    private Integer parcela;
     private double quantidade;
     private double valor;
 
     public Credor() {
     }
 
-    public Credor(String nome, String documento, String titulo, double quantidade, double valor) {
+    public Credor(String nome, String documento, String titulo, Integer parcela, double quantidade, double valor) {
         this.nome = nome;
         this.documento = documento;
         this.titulo = titulo;
+        this.parcela = parcela;
         this.quantidade = quantidade;
         this.valor = valor;
     }
@@ -58,5 +60,14 @@ public class Credor {
     public void setValor(double valor) {
         this.valor = valor;
     }
+
+    public Integer getParcela() {
+        return parcela;
+    }
+
+    public void setParcela(Integer parcela) {
+        this.parcela = parcela;
+    }
+    
 }
-   
+    

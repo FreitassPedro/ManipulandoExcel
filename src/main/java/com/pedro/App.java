@@ -22,7 +22,8 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 public class App {
-    private static final String fileName = "C:\\Users\\CALL1\\Desktop\\projetoExcel\\contas.xlsx";
+    private static final String fileName = "C:\\Users\\CALL1\\Desktop\\projetoExcel\\relatorioOutubro.xlsx";
+    // "C:\\Users\\CALL1\\Desktop\\projetoExcel\\contas.xlsx";
 
     public static void main(String[] args) throws IOException {
         List<Credor> listaCredor = new ArrayList<Credor>();
@@ -34,75 +35,96 @@ public class App {
 
             Iterator<Row> rowIterator = sheetFornecedores.iterator();
 
-            boolean pularLinha = false;
             // ITERADOR DE LINHAS
-            while (rowIterator.hasNext()) {
-                Row row = rowIterator.next();
-                Iterator<Cell> cellIterator = row.cellIterator();
 
-                if (pularLinha) {
-                    pularLinha = false;
-                    continue;
-                }
-                Credor credor = new Credor();
-                listaCredor.add(credor);
-                String nomeEncontrado = "";
+                while (rowIterator.hasNext()) {
+                    boolean pularLinha = false;
+                    Row row = rowIterator.next();
+                    Iterator<Cell> cellIterator = row.cellIterator();
 
-                // LETRA A C D E F N
-                // A-0 C-2 D-3 E-4 N-13
-                // ITERADOR DE COLUNAS
-                while (cellIterator.hasNext()) {
-                    Cell cell = cellIterator.next();
-                    CellStyle cellStyle = cell.getCellStyle();
+                    Credor credor = new Credor();
+                    listaCredor.add(credor);
 
-                    switch (cell.getColumnIndex()) {
-                        case 0:
-                            nomeEncontrado = cell.getStringCellValue();
-                            System.out.println(nomeEncontrado);
-                            System.out.println("Cor Celula: " + obterCorCelula(cellStyle));
-                            String corCelula = obterCorCelula(cellStyle);
-                            if (corCelula.equals("#c0c0c0") || corCelula.equals("#C0C0C0")) {
-                                pularLinha = true;
-                                break;
-                            }
-                            if (!nomeEncontrado.equals("") || nomeEncontrado.equals("Empresa")) {
-                                nomeEncontrado = nomeEncontrado.trim();
-                                String[] fields = nomeEncontrado.split(" - ");
-                                if (fields[1].endsWith(" ") || fields[1].endsWith(".")) {
-                                    fields[1] = fields[1].substring(0, fields[1].length() - 1);
+                    // LETRA A C D E F N
+                    // A-0 C-2 D-3 E-4 N-13
+                    // ITERADOR DE COLUNAS
+                    while (cellIterator.hasNext()) {
+                        Cell cell = cellIterator.next();
+                        CellStyle cellStyle = cell.getCellStyle();
+                        if (pularLinha) {
+                            pularLinha = false;
+                            break;
+                        }
+                        
+
+                        //Inicilizar Strings
+                        String nomeEncontrado = "";
+                        String documento = "";
+                        switch (cell.getColumnIndex()) {
+                            case 0:
+                                nomeEncontrado = cell.getStringCellValue();
+                                System.out.println(nomeEncontrado);
+                                System.out.println("Cor Celula: " + obterCorCelula(cellStyle));
+                                String corCelula = obterCorCelula(cellStyle);
+                                if (nomeEncontrado.contains("Total por empresa")) {
+                                    System.out.println("passou teste");
+                                    rowIterator.next();
+                                    rowIterator.next();
+                                    rowIterator.next();
+                                    rowIterator.next();
+                                    System.out.println("encerrando...");
+                                    pularLinha = true;
+                                    break;
                                 }
-                                removerAcentos(fields[1]);
-                                credor.setNome(removerAcentos(fields[1]).toUpperCase());
-                            } else {
-                                pularLinha = true;
-                            }
-                            break;
-                        case 2:
-                            System.out.println("Documento: " + cell.getStringCellValue());
-                            credor.setDocumento(cell.getStringCellValue());
-                            break;
-                        case 3:
-                            String[] fields = cell.getStringCellValue().split("/");
-                            String parcela = fields[1];
-                            System.out.println("Título: " + fields[0]);
-                            System.out.println("Parcela: " + parcela);
-                            credor.setTitulo(fields[0]);
-                            credor.setParcela(Integer.valueOf(fields[1]));
-                            break;
-                        case 4:
-                            System.out.println("Parcelas Totais: " + cell.getNumericCellValue());
-                            credor.setQuantidade(cell.getNumericCellValue());
-                            break;
-                        case 13:
-                            System.out.println("Valor: " + cell.getNumericCellValue());
-                            credor.setValor(cell.getNumericCellValue());
-                            System.out.println();
-                            break;
+                                if (corCelula.equals("#c0c0c0") || corCelula.equals("#C0C0C0")) {
+                                    pularLinha = true;
+                                    break;
+                                }
+                                if (nomeEncontrado.equals("")) {
+                                    System.out.println("Nome = aspas");
+                                }
+
+                                // PULA CASO A CELULA SEJA VAZIA
+                                if (!nomeEncontrado.equals("")) {
+                                    nomeEncontrado = nomeEncontrado.trim();
+                                    String[] fields = nomeEncontrado.split(" - ");
+                                    if (fields[1].endsWith(" ") || fields[1].endsWith(".")) {
+                                        fields[1] = fields[1].substring(0, fields[1].length() - 1);
+                                    }
+                                    removerAcentos(fields[1]);
+                                    credor.setNome(removerAcentos(fields[1]).toUpperCase());
+                                } else {
+                                    pularLinha = true;
+                                }
+
+                                break;
+                            case 2:
+                                System.out.println("Documento: " + cell.getStringCellValue());
+                                credor.setDocumento(cell.getStringCellValue());
+                                break;
+                            case 3:
+                                String[] fields = cell.getStringCellValue().split("/");
+                                String parcela = fields[1];
+                                System.out.println("Título: " + fields[0]);
+                                System.out.println("Parcela: " + parcela);
+                                credor.setTitulo(fields[0]);
+                                credor.setParcela(fields[1]);
+                                break;
+                            case 4:
+                                System.out.println("Parcelas Totais: " + cell.getNumericCellValue());
+                                credor.setQuantidade(cell.getNumericCellValue());
+                                break;
+                            case 13:
+                                System.out.println("Valor: " + cell.getNumericCellValue());
+                                credor.setValor(cell.getNumericCellValue());
+                                System.out.println();
+                                break;
+                        }
                     }
-                }
+                
+                arquivo.close();
+                workbook.close();
             }
-            arquivo.close();
-            workbook.close();
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -119,9 +141,13 @@ public class App {
             String nomeBeneficiario = credor.getNome();
             double valor = credor.getValor();
             String titulo = credor.getTitulo();
+            String parcela = credor.getParcela();
             String valorTotalString = String.format(Locale.forLanguageTag("pt-BR"),
                     "%,.2f", valor);
-            String resposta = LocalizarPdf.localizarArquivosPdf(nomeBeneficiario, valorTotalString, titulo);
+            if (nomeBeneficiario == null) {
+                continue;
+            }
+            String resposta = LocalizarPdf.localizarArquivosPdf(nomeBeneficiario, valorTotalString, titulo, parcela);
             System.out.println("RESPOSTA----------" + resposta);
             if (!resposta.equals("nomeValor")) {
                 valorPassarIf += valor;
@@ -136,14 +162,9 @@ public class App {
                     valoresPorNome.put(nomeBeneficiario, valor);
                 }
             }
-            else{
-                valorTeste += valor;
-                valoresPorNome.put(nomeBeneficiario + " " + credor.getTitulo(), valor);
-            }
         }
         System.out.println("-> TODOS VALROES LIDOS!");
         System.out.println();
-
 
         // Imprime mapa com os valores agrupados por nome
         for (Map.Entry<String, Double> entry : valoresPorNome.entrySet()) {
@@ -154,15 +175,15 @@ public class App {
             System.out.println();
             System.out.println("Nome:" + nomeBeneficiario + ", Valor Total: "
                     + valorTotalString);
-            LocalizarPdf.localizarArquivosPdf(nomeBeneficiario, valorTotalString, "null");
+            LocalizarPdf.localizarArquivosPdf(nomeBeneficiario, valorTotalString, "null", "null");
             valorDia += valorTotal;
         }
         System.out.println();
         System.out.println("Valor do dia: " + String.format(Locale.forLanguageTag("pt-BR"),
                 "%,.2f", valorDia));
-                System.out.println("valor teste: " + valorTeste);
-                System.out.println("valor passar if " + valorPassarIf);
-                System.out.println("valor total: " +  (valorPassarIf + valorTeste));
+        System.out.println("valor teste: " + valorTeste);
+        System.out.println("valor passar if " + valorPassarIf);
+        System.out.println("valor total: " + (valorPassarIf + valorTeste));
     }
 
     // CÓDIGO DO STACK OVERFLOW PARA REMOVER ACENTOS DAS PALAVRAS
